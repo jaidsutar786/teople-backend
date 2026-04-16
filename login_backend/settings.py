@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     "django_filters",
     "channels",
     "rest_framework_simplejwt.token_blacklist",
+    "cloudinary_storage",
+    "cloudinary",
 
     # Apps
     "accounts",
@@ -190,18 +192,13 @@ SIMPLE_JWT = {
 # =========================
 
 STATIC_URL = "static/"
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CLOUDINARY_URL = os.environ.get("CLOUDINARY_URL")
 
 if CLOUDINARY_URL:
-    import cloudinary
-    INSTALLED_APPS += ['cloudinary_storage', 'cloudinary']
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-else:
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # =========================
 # EMAIL (GMAIL SMTP)
