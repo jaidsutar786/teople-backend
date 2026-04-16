@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salary Slip - {{ employee_name }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .company-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .company-name {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .company-tagline {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .slip-title {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .slip-title h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .slip-period {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .info-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .info-box h3 {
+            color: #667eea;
+            font-size: 16px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-box h3::before {
+            content: "👤";
+            margin-right: 8px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .salary-section {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .salary-section h3 {
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .salary-table {
+            width: 100%;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .salary-table thead {
+            background: #667eea;
+            color: white;
+        }
+
+        .salary-table th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .salary-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 14px;
+        }
+
+        .salary-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .amount {
+            text-align: right;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .deduction {
+            color: #e74c3c;
+        }
+
+        .total-row {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .total-row td {
+            font-size: 16px;
+            color: #667eea;
+        }
+
+        .net-salary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .net-salary h3 {
+            font-size: 16px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .net-salary .amount-big {
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .footer p {
+            color: #666;
+            font-size: 13px;
+            margin: 5px 0;
+        }
+
+        .signature-section {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding: 0 30px;
+        }
+
+        .signature-box {
+            text-align: center;
+        }
+
+        .signature-line {
+            width: 200px;
+            border-top: 2px solid #333;
+            margin-top: 50px;
+            padding-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="company-logo">T</div>
+            <div class="company-name">Teople Technologies</div>
+            <div class="company-tagline">Innovation • Excellence • Growth</div>
+        </div>
+
+        <!-- Slip Title -->
+        <div class="slip-title">
+            <h2>💰 SALARY SLIP</h2>
+            <p class="slip-period">Payment Month: <strong>{{ month_year }}</strong></p>
+            <p class="slip-period">Slip No: <strong>{{ slip_number }}</strong></p>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Employee Information -->
+            <div class="info-section">
+                <div class="info-box">
+                    <h3>Employee Details</h3>
+                    <div class="info-row">
+                        <span class="info-label">Employee ID:</span>
+                        <span class="info-value">{{ employee_id }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Name:</span>
+                        <span class="info-value">{{ employee_name }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Department:</span>
+                        <span class="info-value">{{ department }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Designation:</span>
+                        <span class="info-value">{{ designation }}</span>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h3>Payment Details</h3>
+                    <div class="info-row">
+                        <span class="info-label">Payment Date:</span>
+                        <span class="info-value">{{ payment_date }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Payment Method:</span>
+                        <span class="info-value">Bank Transfer</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Working Days:</span>
+                        <span class="info-value">{{ total_days }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Per Day Salary:</span>
+                        <span class="info-value">₹{{ per_day_salary }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Salary Breakdown -->
+            <div class="salary-section">
+                <h3>💵 Salary Breakdown</h3>
+                <table class="salary-table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th class="amount">Amount (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Gross Monthly Salary</td>
+                            <td class="amount">{{ gross_salary }}</td>
+                        </tr>
+                        <tr>
+                            <td>Per Day Salary</td>
+                            <td class="amount">{{ per_day_salary }}</td>
+                        </tr>
+                        <tr>
+                            <td>Effective Working Days</td>
+                            <td class="amount">{{ effective_days }}</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td>Calculated Salary</td>
+                            <td class="amount">{{ calculated_salary }}</td>
+                        </tr>
+                        <tr>
+                            <td class="deduction">Professional Tax</td>
+                            <td class="amount deduction">- {{ professional_tax }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Net Salary -->
+            <div class="net-salary">
+                <h3>NET SALARY PAYABLE</h3>
+                <div class="amount-big">₹ {{ net_salary }}</div>
+            </div>
+
+            <!-- Signature Section -->
+            <div class="signature-section">
+                <div class="signature-box">
+                    <div class="signature-line">Employee Signature</div>
+                </div>
+                <div class="signature-box">
+                    <div class="signature-line">Authorized Signatory</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>📍 Address:</strong> 95, Maske Vasti Rd, Ravet, Pimpri-Chinchwad, Maharashtra 412101</p>
+            <p><strong>📞 Phone:</strong> +91 9420206555 | <strong>✉️ Email:</strong> admin@teople.co.in</p>
+            <p style="margin-top: 15px; font-style: italic;">This is a computer-generated salary slip. No signature required.</p>
+            <p>For queries contact: HR Department</p>
+        </div>
+    </div>
+</body>
+</html>
