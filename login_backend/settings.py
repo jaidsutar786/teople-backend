@@ -33,7 +33,6 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
-    "cloudinary_storage",
     "django.contrib.staticfiles",
     "cloudinary",
 
@@ -188,17 +187,27 @@ SIMPLE_JWT = {
 }
 
 # =========================
+# CLOUDINARY
+# =========================
+
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
+CLOUDINARY_URL = os.environ.get("CLOUDINARY_URL")
+
+if CLOUDINARY_URL:
+    cloudinary.config(
+        cloudinary_url=CLOUDINARY_URL
+    )
+
+# =========================
 # STATIC / MEDIA
 # =========================
 
 STATIC_URL = "static/"
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-CLOUDINARY_URL = os.environ.get("CLOUDINARY_URL")
-
-if CLOUDINARY_URL:
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # =========================
 # EMAIL (GMAIL SMTP)
