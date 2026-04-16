@@ -13,6 +13,7 @@ import pymysql
 pymysql.install_as_MySQLdb()
 from pathlib import Path
 from datetime import timedelta
+ALLOWED_HOSTS = ['.onrender.com']
 
 # settings.py में add करें
 TIME_ZONE = 'Asia/Kolkata'
@@ -131,15 +132,24 @@ CHANNEL_LAYERS = {
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',  # MariaDB ke liye bhi 'mysql' engine use hota hai
+#         'NAME': 'test_db',
+#         'USER': 'root',
+#         'PASSWORD': 'Maria@963',
+#         'HOST': '127.0.0.1',  # agar local hai
+#         'PORT': '3307',       # MariaDB default port
+#     }
+# }
+
+
+import dj_database_url
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',  # MariaDB ke liye bhi 'mysql' engine use hota hai
-        'NAME': 'test_db',
-        'USER': 'root',
-        'PASSWORD': 'Maria@963',
-        'HOST': '127.0.0.1',  # agar local hai
-        'PORT': '3307',       # MariaDB default port
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL')
+    )
 }
 
 
@@ -225,7 +235,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'sutarjaid970@gmail.com'
-EMAIL_HOST_PASSWORD = 'ptghuhstwvaovgcs'  # Gmail App Password (spaces removed)
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = 'sutarjaid970@gmail.com'
 EMAIL_USE_SSL = False
 EMAIL_TIMEOUT = 30
