@@ -15,7 +15,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         user = await self.get_user_from_token(token)
 
         if user is None:
-            await self.close()
+            await self.close(code=4003)
             return
 
         self.user = user
