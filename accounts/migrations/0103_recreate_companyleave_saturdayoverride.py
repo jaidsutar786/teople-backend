@@ -11,21 +11,21 @@ class Migration(migrations.Migration):
         migrations.RunSQL(
             sql="""
                 CREATE TABLE IF NOT EXISTS company_leaves (
-                    id bigserial PRIMARY KEY,
+                    id BIGINT AUTO_INCREMENT PRIMARY KEY,
                     date date NOT NULL UNIQUE,
                     reason varchar(255) NOT NULL,
                     month int NOT NULL,
                     year int NOT NULL,
-                    created_at timestamptz NOT NULL DEFAULT NOW()
+                    created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
                 );
                 CREATE TABLE IF NOT EXISTS saturday_overrides (
-                    id bigserial PRIMARY KEY,
+                    id BIGINT AUTO_INCREMENT PRIMARY KEY,
                     date date NOT NULL UNIQUE,
                     status varchar(10) NOT NULL,
                     month int NOT NULL,
                     year int NOT NULL,
-                    created_at timestamptz NOT NULL DEFAULT NOW(),
-                    updated_at timestamptz NOT NULL DEFAULT NOW()
+                    created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                    updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
                 );
             """,
             reverse_sql="""
