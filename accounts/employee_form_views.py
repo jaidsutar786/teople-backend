@@ -132,7 +132,7 @@ def get_employee_form_data(request):
         
         profile_pic_url = None
         if employee.profile_picture:
-            profile_pic_url = request.build_absolute_uri(employee.profile_picture.url)
+            profile_pic_url = employee.profile_picture
         
         return Response({
             'employee': {
@@ -218,7 +218,7 @@ def get_all_employee_forms(request):
             
             profile_pic_url = None
             if emp.profile_picture:
-                profile_pic_url = request.build_absolute_uri(emp.profile_picture.url)
+                profile_pic_url = emp.profile_picture
             
             data.append({
                 'employee': {

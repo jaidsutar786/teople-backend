@@ -27,10 +27,19 @@ def upload_profile_picture(request):
                 overwrite=True
             )
             profile_url = upload_result['secure_url']
-            employee.profile_picture = profile_url
         else:
-            employee.profile_picture = file
-            profile_url = request.build_absolute_uri(employee.profile_picture.url)
+            # Local — save file manually
+            import os as _os
+            from django.conf import settings
+            upload_dir = _os.path.join(settings.MEDIA_ROOT, 'profile_pictures')
+            _os.makedirs(upload_dir, exist_ok=True)
+            file_path = _os.path.join(upload_dir, f'profile_{employee.id}.jpg')
+            with open(file_path, 'wb') as f_out:
+                for chunk in file.chunks():
+                    f_out.write(chunk)
+            profile_url = f'{settings.MEDIA_URL}profile_pictures/profile_{employee.id}.jpg'
+        
+        employee.profile_picture = profile_url
         
         employee.save()
         
