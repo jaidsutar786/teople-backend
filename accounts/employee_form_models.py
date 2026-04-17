@@ -6,28 +6,28 @@ class EmployeeDocument(models.Model):
     employee = models.ForeignKey(AddEmployee, on_delete=models.CASCADE, related_name='documents')
     
     # Personal Documents
-    aadhar_pdf = models.FileField(upload_to='employee_docs/aadhar/', blank=True, null=True)
-    pan_pdf = models.FileField(upload_to='employee_docs/pan/', blank=True, null=True)
-    passport_pdf = models.FileField(upload_to='employee_docs/passport/', blank=True, null=True)
+    aadhar_pdf = models.CharField(max_length=500, blank=True, null=True)
+    pan_pdf = models.CharField(max_length=500, blank=True, null=True)
+    passport_pdf = models.CharField(max_length=500, blank=True, null=True)
     
     # Educational Documents
-    tenth_marksheet = models.FileField(upload_to='employee_docs/education/10th/', blank=True, null=True)
-    twelfth_marksheet = models.FileField(upload_to='employee_docs/education/12th/', blank=True, null=True)
-    highest_qualification_doc = models.FileField(upload_to='employee_docs/education/highest/', blank=True, null=True)
-    additional_certifications = models.FileField(upload_to='employee_docs/certifications/', blank=True, null=True)
-    skill_certificates = models.FileField(upload_to='employee_docs/skills/', blank=True, null=True)
+    tenth_marksheet = models.CharField(max_length=500, blank=True, null=True)
+    twelfth_marksheet = models.CharField(max_length=500, blank=True, null=True)
+    highest_qualification_doc = models.CharField(max_length=500, blank=True, null=True)
+    additional_certifications = models.CharField(max_length=500, blank=True, null=True)
+    skill_certificates = models.CharField(max_length=500, blank=True, null=True)
     
     # Employment Documents
-    company1_offer_letter = models.FileField(upload_to='employee_docs/employment/company1/offer/', blank=True, null=True)
-    company1_experience_letter = models.FileField(upload_to='employee_docs/employment/company1/experience/', blank=True, null=True)
-    company1_salary_slips = models.FileField(upload_to='employee_docs/employment/company1/salary/', blank=True, null=True)
+    company1_offer_letter = models.CharField(max_length=500, blank=True, null=True)
+    company1_experience_letter = models.CharField(max_length=500, blank=True, null=True)
+    company1_salary_slips = models.CharField(max_length=500, blank=True, null=True)
     
-    company2_offer_letter = models.FileField(upload_to='employee_docs/employment/company2/offer/', blank=True, null=True)
-    company2_experience_letter = models.FileField(upload_to='employee_docs/employment/company2/experience/', blank=True, null=True)
-    company2_salary_slips = models.FileField(upload_to='employee_docs/employment/company2/salary/', blank=True, null=True)
+    company2_offer_letter = models.CharField(max_length=500, blank=True, null=True)
+    company2_experience_letter = models.CharField(max_length=500, blank=True, null=True)
+    company2_salary_slips = models.CharField(max_length=500, blank=True, null=True)
     
     # Bank Documents
-    bank_document = models.FileField(upload_to='employee_docs/bank/', blank=True, null=True)
+    bank_document = models.CharField(max_length=500, blank=True, null=True)
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

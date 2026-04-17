@@ -42,9 +42,9 @@ class EmployeeDocumentSerializer(serializers.ModelSerializer):
         ]
     
     def _get_file_url(self, obj, field_name):
-        file_field = getattr(obj, field_name, None)
-        if file_field:
-            return self.context['request'].build_absolute_uri(file_field.url) if 'request' in self.context else file_field.url
+        value = getattr(obj, field_name, None)
+        if value:
+            return value
         return None
     
     def get_aadhar_pdf(self, obj):

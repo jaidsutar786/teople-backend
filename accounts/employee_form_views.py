@@ -10,6 +10,31 @@ from .employee_form_serializers import (
     EmployeeDocumentSerializer,
     EmployeeFormSubmitSerializer
 )
+import os
+import cloudinary.uploader
+
+
+def upload_to_cloudinary(file, folder, public_id):
+    """Upload file to Cloudinary if configured, else save locally"""
+    if os.environ.get('CLOUDINARY_URL'):
+        result = cloudinary.uploader.upload(
+            file,
+            folder=folder,
+            public_id=public_id,
+            overwrite=True,
+            resource_type='auto'
+        )
+        return result['secure_url']
+    else:
+        from django.conf import settings
+        upload_dir = os.path.join(settings.MEDIA_ROOT, folder)
+        os.makedirs(upload_dir, exist_ok=True)
+        ext = os.path.splitext(file.name)[1] or '.pdf'
+        file_path = os.path.join(upload_dir, f'{public_id}{ext}')
+        with open(file_path, 'wb') as f_out:
+            for chunk in file.chunks():
+                f_out.write(chunk)
+        return f'{settings.MEDIA_URL}{folder}/{public_id}{ext}'
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -56,46 +81,34 @@ def submit_employee_form(request):
             
             # Handle document uploads
             documents, doc_created = EmployeeDocument.objects.get_or_create(employee=employee)
+            emp_id = employee.id
             
-            # Personal Documents
-            if 'aadhar_pdf' in request.FILES:
-                documents.aadhar_pdf = request.FILES['aadhar_pdf']
-            if 'pan_pdf' in request.FILES:
-                documents.pan_pdf = request.FILES['pan_pdf']
-            if 'passport_pdf' in request.FILES:
-                documents.passport_pdf = request.FILES['passport_pdf']
+            doc_fields = [
+                ('aadhar_pdf', 'employee_docs/aadhar'),
+                ('pan_pdf', 'employee_docs/pan'),
+                ('passport_pdf', 'employee_docs/passport'),
+                ('tenth_marksheet', 'employee_docs/education'),
+                ('twelfth_marksheet', 'employee_docs/education'),
+                ('highest_qualification_doc', 'employee_docs/education'),
+                ('additional_certifications', 'employee_docs/certifications'),
+                ('skill_certificates', 'employee_docs/skills'),
+                ('company1_offer_letter', 'employee_docs/company1'),
+                ('company1_experience_letter', 'employee_docs/company1'),
+                ('company1_salary_slips', 'employee_docs/company1'),
+                ('company2_offer_letter', 'employee_docs/company2'),
+                ('company2_experience_letter', 'employee_docs/company2'),
+                ('company2_salary_slips', 'employee_docs/company2'),
+                ('bank_document', 'employee_docs/bank'),
+            ]
             
-            # Educational Documents
-            if 'tenth_marksheet' in request.FILES:
-                documents.tenth_marksheet = request.FILES['tenth_marksheet']
-            if 'twelfth_marksheet' in request.FILES:
-                documents.twelfth_marksheet = request.FILES['twelfth_marksheet']
-            if 'highest_qualification_doc' in request.FILES:
-                documents.highest_qualification_doc = request.FILES['highest_qualification_doc']
-            if 'additional_certifications' in request.FILES:
-                documents.additional_certifications = request.FILES['additional_certifications']
-            if 'skill_certificates' in request.FILES:
-                documents.skill_certificates = request.FILES['skill_certificates']
-            
-            # Employment Documents - Company 1
-            if 'company1_offer_letter' in request.FILES:
-                documents.company1_offer_letter = request.FILES['company1_offer_letter']
-            if 'company1_experience_letter' in request.FILES:
-                documents.company1_experience_letter = request.FILES['company1_experience_letter']
-            if 'company1_salary_slips' in request.FILES:
-                documents.company1_salary_slips = request.FILES['company1_salary_slips']
-            
-            # Employment Documents - Company 2
-            if 'company2_offer_letter' in request.FILES:
-                documents.company2_offer_letter = request.FILES['company2_offer_letter']
-            if 'company2_experience_letter' in request.FILES:
-                documents.company2_experience_letter = request.FILES['company2_experience_letter']
-            if 'company2_salary_slips' in request.FILES:
-                documents.company2_salary_slips = request.FILES['company2_salary_slips']
-            
-            # Bank Documents
-            if 'bank_document' in request.FILES:
-                documents.bank_document = request.FILES['bank_document']
+            for field_name, folder in doc_fields:
+                if field_name in request.FILES:
+                    url = upload_to_cloudinary(
+                        request.FILES[field_name],
+                        folder,
+                        f'{emp_id}_{field_name}'
+                    )
+                    setattr(documents, field_name, url)
             
             documents.save()
             
@@ -172,13 +185,17 @@ def update_employee_form(request):
             personal_info.save()
             
             # Update documents if provided
-            if any(key in request.FILES for key in request.FILES.keys()):
+            if request.FILES:
                 documents = EmployeeDocument.objects.get(employee=employee)
-                
+                emp_id = employee.id
                 for field_name in request.FILES.keys():
                     if hasattr(documents, field_name):
-                        setattr(documents, field_name, request.FILES[field_name])
-                
+                        url = upload_to_cloudinary(
+                            request.FILES[field_name],
+                            f'employee_docs/{field_name}',
+                            f'{emp_id}_{field_name}'
+                        )
+                        setattr(documents, field_name, url)
                 documents.save()
             
             return Response({
