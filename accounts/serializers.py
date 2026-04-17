@@ -38,13 +38,9 @@ class EmployeeSerializer(serializers.ModelSerializer):
     def get_email(self, obj):
         return obj.user.email
     
-    def get_profile_picture(self, obj):  # ✅ NEW METHOD
-        """Get profile picture URL"""
+    def get_profile_picture(self, obj):
         if obj.profile_picture:
-            request = self.context.get('request')
-            if request:
-                return request.build_absolute_uri(obj.profile_picture.url)
-            return obj.profile_picture.url
+            return obj.profile_picture
         return None
     
     def get_offer_letter_pdf_url(self, obj):

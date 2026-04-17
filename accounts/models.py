@@ -83,7 +83,7 @@ class AddEmployee(models.Model):
     department = models.CharField(max_length=50, choices=DEPARTMENT_CHOICES)
     position = models.CharField(max_length=100)
     address = models.TextField(blank=True, null=True)
-    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
+    profile_picture = models.CharField(max_length=500, blank=True, null=True)
     
     # ✅ NEW: Joining date field
     joining_date = models.DateField(blank=True, null=True, help_text="Employee joining date")
