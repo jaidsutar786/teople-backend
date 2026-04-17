@@ -19,7 +19,7 @@ def upload_profile_picture(request):
         file = request.FILES['profile_picture']
         
         # Upload to Cloudinary if configured, else local
-        if os.environ.get('CLOUDINARY_URL'):
+        if os.environ.get('CLOUDINARY_URL') and (os.environ.get('RENDER') or os.environ.get('IS_PRODUCTION')):
             upload_result = cloudinary.uploader.upload(
                 file,
                 folder='profile_pictures',
@@ -30,7 +30,6 @@ def upload_profile_picture(request):
             )
             profile_url = upload_result['secure_url']
         else:
-            # Local — save file manually
             import os as _os
             from django.conf import settings
             upload_dir = _os.path.join(settings.MEDIA_ROOT, 'profile_pictures')
@@ -39,7 +38,7 @@ def upload_profile_picture(request):
             with open(file_path, 'wb') as f_out:
                 for chunk in file.chunks():
                     f_out.write(chunk)
-            profile_url = f'{settings.MEDIA_URL}profile_pictures/profile_{employee.id}.jpg'
+            profile_url = f'http://127.0.0.1:8000{settings.MEDIA_URL}profile_pictures/profile_{employee.id}.jpg'
         
         employee.profile_picture = profile_url
         

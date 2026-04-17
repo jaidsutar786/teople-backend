@@ -16,8 +16,10 @@ import cloudinary.uploader
 
 def upload_to_cloudinary(file, folder, public_id):
     """Upload file to Cloudinary if configured, else save locally"""
-    if os.environ.get('CLOUDINARY_URL'):
-        # PDF/raw files ke liye resource_type='raw', images ke liye 'image'
+    cloudinary_url = os.environ.get('CLOUDINARY_URL')
+    is_production = os.environ.get('RENDER') or os.environ.get('IS_PRODUCTION')
+    
+    if cloudinary_url and is_production:
         ext = os.path.splitext(file.name)[1].lower()
         resource_type = 'raw' if ext in ['.pdf', '.doc', '.docx', '.xls', '.xlsx'] else 'image'
         result = cloudinary.uploader.upload(
@@ -29,6 +31,7 @@ def upload_to_cloudinary(file, folder, public_id):
         )
         return result['secure_url']
     else:
+        # Local — save to media folder
         from django.conf import settings
         upload_dir = os.path.join(settings.MEDIA_ROOT, folder)
         os.makedirs(upload_dir, exist_ok=True)
@@ -37,7 +40,7 @@ def upload_to_cloudinary(file, folder, public_id):
         with open(file_path, 'wb') as f_out:
             for chunk in file.chunks():
                 f_out.write(chunk)
-        return f'{settings.MEDIA_URL}{folder}/{public_id}{ext}'
+        return f'http://127.0.0.1:8000{settings.MEDIA_URL}{folder}/{public_id}{ext}'
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
