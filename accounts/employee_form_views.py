@@ -17,14 +17,15 @@ import cloudinary.uploader
 def upload_to_cloudinary(file, folder, public_id):
     """Upload file to Cloudinary if configured, else save locally"""
     if os.environ.get('CLOUDINARY_URL'):
+        # PDF/raw files ke liye resource_type='raw', images ke liye 'image'
+        ext = os.path.splitext(file.name)[1].lower()
+        resource_type = 'raw' if ext in ['.pdf', '.doc', '.docx', '.xls', '.xlsx'] else 'image'
         result = cloudinary.uploader.upload(
             file,
             folder=folder,
             public_id=public_id,
             overwrite=True,
-            resource_type='auto',
-            access_mode='public',
-            type='upload'
+            resource_type=resource_type,
         )
         return result['secure_url']
     else:
