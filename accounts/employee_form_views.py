@@ -22,7 +22,9 @@ def upload_to_cloudinary(file, folder, public_id):
             folder=folder,
             public_id=public_id,
             overwrite=True,
-            resource_type='auto'
+            resource_type='auto',
+            access_mode='public',
+            type='upload'
         )
         return result['secure_url']
     else:

@@ -24,7 +24,9 @@ def upload_profile_picture(request):
                 file,
                 folder='profile_pictures',
                 public_id=f'profile_{employee.id}',
-                overwrite=True
+                overwrite=True,
+                access_mode='public',
+                type='upload'
             )
             profile_url = upload_result['secure_url']
         else:
