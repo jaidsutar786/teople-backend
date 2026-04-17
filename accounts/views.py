@@ -330,12 +330,14 @@ def login(request):
 # ================= Employee API =================
 @method_decorator(csrf_exempt, name="dispatch")
 class EmployeeAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, pk=None):
         if pk:
             try:
                 employee = AddEmployee.objects.get(pk=pk)
                 serializer = EmployeeSerializer(employee, context={'request': request})  # ✅ ADD CONTEXT
-                return Response(serializer.data) 
+                return Response(serializer.data)
             except AddEmployee.DoesNotExist:
                 return Response({"error": "Employee not found"}, status=status.HTTP_404_NOT_FOUND)
         employees = AddEmployee.objects.all()
@@ -343,6 +345,9 @@ class EmployeeAPIView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
+        if request.user.role != 'admin':
+            return Response({"error": "Only admin can add employees"}, status=status.HTTP_403_FORBIDDEN)
+
         serializer = AddEmployeeSerializer(data=request.data)
         if serializer.is_valid():
             email = request.data.get("email")
@@ -355,13 +360,13 @@ class EmployeeAPIView(APIView):
                 email=email,
                 defaults={"username": username, "role": "employee"}
             )
-            
+
             # Check if employee profile already exists for this user
             if AddEmployee.objects.filter(user=user_obj).exists():
                 return Response({
                     "error": "Employee profile already exists for this user"
                 }, status=status.HTTP_400_BAD_REQUEST)
-            
+
             # ✅ NEW: Set joining date if provided
             employee_data = serializer.validated_data.copy()
             if joining_date:
@@ -370,24 +375,25 @@ class EmployeeAPIView(APIView):
                     employee_data['joining_date'] = datetime.strptime(joining_date, '%Y-%m-%d').date()
                 except ValueError:
                     pass  # If invalid date format, ignore
-            
+
             employee = AddEmployee.objects.create(user=user_obj, **employee_data)
-            
+
             # Send welcome email
             if created:
                 try:
                     from django.core.mail import send_mail
+                    from django.conf import settings
                     send_mail(
                         subject='Welcome to Teople Technologies',
                         message=f'Dear {first_name} {last_name},\n\nWelcome to Teople Technologies!\n\nYour account has been created successfully.\nEmail: {email}\n\nPlease register at: http://localhost:5173/register\n\nBest Regards,\nHR Team\nTeople Technologies',
-                        from_email='sutarjaid970@gmail.com',
+                        from_email=settings.DEFAULT_FROM_EMAIL,
                         recipient_list=[email],
                         fail_silently=False,
                     )
                     safe_print(f"✅ Welcome email sent to {email}")
                 except Exception as e:
                     safe_print(f"❌ Failed to send email: {str(e)}")
-            
+
             return Response({
                 "message": "Employee created successfully",
                 "data": EmployeeSerializer(employee).data,
@@ -396,6 +402,9 @@ class EmployeeAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk=None):
+        if request.user.role != 'admin':
+            return Response({"error": "Only admin can update employees"}, status=status.HTTP_403_FORBIDDEN)
+
         try:
             employee = AddEmployee.objects.get(pk=pk)
         except AddEmployee.DoesNotExist:
@@ -426,13 +435,16 @@ class EmployeeAPIView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response({
-                "message": "Employee updated successfully", 
+                "message": "Employee updated successfully",
                 "data": serializer.data,
                 "joining_date": employee.joining_date.strftime('%Y-%m-%d') if employee.joining_date else None,
             })
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk=None):
+        if request.user.role != 'admin':
+            return Response({"error": "Only admin can delete employees"}, status=status.HTTP_403_FORBIDDEN)
+
         try:
             employee = AddEmployee.objects.get(pk=pk)
         except AddEmployee.DoesNotExist:
